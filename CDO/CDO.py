@@ -37,6 +37,7 @@ class CDO:
 
     def read_student_csv(self):
         print("Четение студентов из csv")
+        self.students.clear()
         student_df = pd.read_csv(filepath_or_buffer='CSVs/Students.csv', sep=',')
         bank_df = pd.read_csv(filepath_or_buffer='CSVs/BankCards.csv', sep=',')
         payment_df = pd.read_csv(filepath_or_buffer='CSVs/PaymentReceipts.csv', sep=',')
@@ -81,6 +82,7 @@ class CDO:
 
     def read_employers_csv(self):
         print("Чтение работников из csv")
+        self.employers.clear()
         self.read_subjects_csv()
         employers_df = pd.read_csv(filepath_or_buffer='CSVs/Employers.csv', sep=',')
         for _, row in employers_df.iterrows():
@@ -107,12 +109,14 @@ class CDO:
                                                   teacher_type=TeacherType.practitioner))
 
     def read_subjects_csv(self):
+        self.subjects.clear()
         subjects_df = pd.read_csv(filepath_or_buffer='CSVs/Subjects.csv', sep=',')
         for _, row in subjects_df.iterrows():
             self.subjects.append(Subject(name=row[0], faculty=row[1], lecture_hours=row[2], practical_hours=row[3],
                                          topics=str(row[4]).split(';'), type=row[5]))
 
     def read_academic_performance_csv(self):
+        self.academic_performances.clear()
         academic_performance_df = pd.read_csv(filepath_or_buffer='CSVs/AcademicPerformance.csv', sep=',')
         self.read_subjects_csv()
         for _, row in academic_performance_df.iterrows():
@@ -120,6 +124,7 @@ class CDO:
                 AcademicPerformance(student_id=row[0], subject=self.get_subject_by_name(row[1]), rating=row[2]))
 
     def read_groups_csv(self):
+        self.groups.clear()
         groups_df = pd.read_csv(filepath_or_buffer='CSVs/Groups.csv', sep=',')
         self.read_student_csv()
         self.read_subjects_csv()
@@ -320,6 +325,7 @@ class FinancialWorker(Employer):
             self.become_busy()
             order = ScholarshipOrder(random.randint(100000, 999999),
                                      'Приказ на стипендию' + datetime.now().strftime("%d-%m-%Y"), datetime.now())
+            self.cdo.documents.append(order)
             self.cdo.read_student_csv()
             self.cdo.read_academic_performance_csv()
             budgets = self.cdo.get_budgets()
